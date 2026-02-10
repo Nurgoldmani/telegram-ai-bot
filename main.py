@@ -16,7 +16,7 @@ client = Groq(api_key=GROQ_API_KEY)
 async def handle_message(message: Message):
     try:
         response = client.chat.completions.create(
-            model="llama3-70b-8192",
+            model="llama-3.1-70b-versatile"
             messages=[
                 {"role": "system", "content": "Ты AI-консультант, отвечай понятно и дружелюбно."},
                 {"role": "user", "content": message.text}
