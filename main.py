@@ -2,37 +2,33 @@ import asyncio
 import os
 from aiogram import Bot, Dispatcher, F
 from aiogram.types import Message
-from openai import OpenAI
+from groq import Groq
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
 bot = Bot(token=BOT_TOKEN)
 dp = Dispatcher()
 
-client = OpenAI(api_key=OPENAI_API_KEY)
-
-SYSTEM_PROMPT = (
-    "Ты AI-консультант. Отвечай понятно, дружелюбно и по делу."
-)
+client = Groq(api_key=GROQ_API_KEY)
 
 @dp.message(F.text)
-async def ai_reply(message: Message):
+async def handle_message(message: Message):
     try:
         response = client.chat.completions.create(
-            model="gpt-4o-mini",
+            model="mixtral-8x7b-32768",
             messages=[
-                {"role": "system", "content": SYSTEM_PROMPT},
+                {"role": "system", "content": "Ты AI-консультант, отвечай понятно и дружелюбно."},
                 {"role": "user", "content": message.text}
             ]
         )
         await message.answer(response.choices[0].message.content)
     except Exception as e:
         print(e)
-        await message.answer("Ошибка AI. Попробуй позже.")
+        await message.answer("⚠️ AI временно недоступен.")
 
 async def main():
-    print("🤖 AI bot started")
+    print("🤖 Groq AI bot started")
     await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(bot)
 
