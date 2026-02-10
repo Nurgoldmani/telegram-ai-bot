@@ -1,23 +1,15 @@
+from aiogram import Bot, Dispatcher
+from aiogram.utils import executor
 import os
-from telegram import Update
-from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, ContextTypes, filters
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("Привет! Я AI-консультант 🤖")
+bot = Bot(token=BOT_TOKEN)
+dp = Dispatcher(bot)
 
-async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text(f"Ты написал: {update.message.text}")
-
-def main():
-    app = ApplicationBuilder().token(BOT_TOKEN).build()
-
-    app.add_handler(CommandHandler("start", start))
-    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, echo))
-
-    print("Bot started...")
-    app.run_polling()
+@dp.message_handler(commands=["start"])
+async def start(msg):
+    await msg.answer("Бот работает 🚀")
 
 if __name__ == "__main__":
-    main()
+    executor.start_polling(dp, skip_updates=True)
