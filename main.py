@@ -1,15 +1,20 @@
-from aiogram import Bot, Dispatcher
-from aiogram.utils import executor
+import asyncio
 import os
+from aiogram import Bot, Dispatcher, F
+from aiogram.types import Message
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 
 bot = Bot(token=BOT_TOKEN)
-dp = Dispatcher(bot)
+dp = Dispatcher()
 
-@dp.message_handler(commands=["start"])
-async def start(msg):
-    await msg.answer("Бот работает 🚀")
+@dp.message(F.text)
+async def reply(message: Message):
+    await message.answer("Я на связи 🤖")
+
+async def main():
+    await bot.delete_webhook(drop_pending_updates=True)
+    await dp.start_polling(bot)
 
 if __name__ == "__main__":
-    executor.start_polling(dp, skip_updates=True)
+    asyncio.run(main())
